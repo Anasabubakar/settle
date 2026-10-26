@@ -37,10 +37,25 @@ No Soroban contract exists here. If later justified, it belongs in a separate Ru
 - Mainnet candidate: enabled only with `EXPO_PUBLIC_STELLAR_NETWORK=mainnet` and a settlement API. This config is not a production approval.
 - Asset issuer: returned by each verified quote. Do not hard-code an issuer from a tutorial, fixture, or another provider's docs.
 
+## Settlement API contract
+
+The contract for verified quotes, signed-payment submission, confirmation and receipts is defined as OpenAPI 3.1 in the `settle-api` repository (`openapi.yaml`, https://github.com/Anasabubakar/settle-api once published), with a reference testnet implementation, an architecture note and a threat model next to it. Rules the contract enforces:
+
+- The client sends a bill, an amount in fiat minor units, and its own source account. It never sends a destination, asset issuer, rate, fee, memo or network; requests carrying them are rejected.
+- A quote returns an expiring, single-use, fee-disclosed amount and an **unsigned** transaction. The wallet signs exactly that XDR.
+- Submission requires an `Idempotency-Key`. The server verifies the signed transaction matches the quote before submitting, then confirms independently against the network before issuing a hash-chained receipt.
+- Examples and fixtures are testnet only.
+
+Client side: `src/services/settlement-client.ts` calls the API when `EXPO_PUBLIC_SETTLEMENT_API_URL` is set, and `src/services/wallet.ts` defines the wallet adapter boundary (Freighter on web, an explicit "unavailable" adapter on mobile).
+
+Related: [privacy and evidence retention](privacy-evidence.md), [reduced motion](reduced-motion.md).
+
 ## Current implementation
 
 - The Expo client has the Stellar SDK, environment-selected network config, a verified server-quote authorization type, and production gating.
-- It does not yet have a live wallet adapter, payment API, quote engine, provider directory, indexer, or contract.
+- It has a wallet adapter interface (Freighter on web; explicit unavailable state on mobile) and a settlement API client behind `EXPO_PUBLIC_SETTLEMENT_API_URL`. The default flow remains a testnet preview and signs nothing.
+- The settlement API exists as a testnet reference implementation with fixture providers and rates, proven against the live Stellar testnet.
+- It does not yet have authentication, a production provider directory, a real rate source, mobile wallet signing, a production indexer, or a contract.
 - Funding remains a testnet preview until those services exist and are verified.
 
 ## Build order
