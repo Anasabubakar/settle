@@ -1,0 +1,16 @@
+name: Feature proposal
+description: Suggest a focused, safe improvement.
+title: "proposal: "
+labels: [enhancement, triage]
+body:
+  - type: textarea
+    attributes:
+      label: Problem
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed approach
+      description: Explain privacy, safety, and settlement implications.
+    validations:
+      required: true
