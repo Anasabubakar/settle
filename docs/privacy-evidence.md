@@ -1,6 +1,6 @@
 # Privacy design: evidence redaction and retention
 
-Status: design. Nothing here is implemented yet; the app does not upload or store bills today. This is the contract the future upload pipeline must meet before any real bill is accepted.
+Status: partial implementation. The companion [settle-api evidence service](https://github.com/Anasabubakar/settle-api/blob/main/docs/evidence-api.md) now has encrypted local quarantine, a restricted manual review step, an allowlisted redacted summary, an audit log, and retention purge support. The app still selects files locally and does not upload real bills. Automated redaction, malware scanning, individual reviewer authorization, and authenticated client upload are not yet implemented.
 
 ## Principles
 
