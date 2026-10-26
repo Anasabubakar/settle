@@ -14,6 +14,7 @@ import {
 import { ActionButton, formatMoney, Pill, ProgressMeter } from '@/components/ui/primitives';
 import { Fonts, SettleColors } from '@/constants/theme';
 import { settlementModeLabel } from '@/services/stellar';
+import { describeWalletError, getWalletAdapter } from '@/services/wallet';
 import type { Bill, Money } from '@/types/domain';
 
 const fontTokens = Fonts as typeof Fonts & { display?: string; body?: string };
@@ -46,11 +47,28 @@ export function ContributionSheet({
   }, [bill.acceptsPartialFunding, remainingMinor]);
   const [amountText, setAmountText] = useState('');
   const [walletConnected, setWalletConnected] = useState(false);
+  const [walletNote, setWalletNote] = useState<string | null>(null);
+
+  // Checks for a real wallet. The default flow stays a testnet preview either way, and nothing is signed here.
+  const checkWallet = async () => {
+    try {
+      const availability = await getWalletAdapter().availability();
+      setWalletNote(
+        availability.available
+          ? 'Wallet found. Signing is only enabled once a verified server quote is configured; this is a preview.'
+          : `${availability.reason} Continuing with the testnet preview.`,
+      );
+    } catch (error) {
+      setWalletNote(describeWalletError(error));
+    }
+    setWalletConnected(true);
+  };
 
   useEffect(() => {
     if (visible) {
       setAmountText(minorToInput(suggestedAmounts[0] ?? remainingMinor));
       setWalletConnected(false);
+      setWalletNote(null);
     }
   }, [bill.id, remainingMinor, suggestedAmounts, visible]);
 
@@ -182,6 +200,9 @@ export function ContributionSheet({
                   <Text style={styles.stellarTitle}>USDC ON STELLAR</Text>
                   <Text style={styles.stellarText}>{walletConnected ? 'Wallet signing preview · no funds move' : 'Your wallet signs. Settle never holds your funds.'}</Text>
                   <Text style={styles.stellarQuote}>A verified server quote is required before any live settlement.</Text>
+                  {walletNote ? (
+                    <Text accessibilityLiveRegion="polite" accessibilityRole="alert" style={styles.stellarQuote}>{walletNote}</Text>
+                  ) : null}
                 </View>
                 <View style={styles.networkBadge}><Text style={styles.networkBadgeText}>{settlementModeLabel().toUpperCase()}</Text></View>
               </View>
@@ -194,7 +215,7 @@ export function ContributionSheet({
                   onPress={() => onConfirm({ amountMinor, currency: bill.total.currency }, bill)}
                 />
               ) : (
-                <ActionButton label="Preview Stellar wallet" disabled={false} onPress={() => setWalletConnected(true)} />
+                <ActionButton label="Preview Stellar wallet" disabled={false} onPress={() => void checkWallet()} />
               )}
             </ScrollView>
           </View>
