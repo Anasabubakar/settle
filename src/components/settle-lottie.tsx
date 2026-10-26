@@ -1,6 +1,7 @@
 import LottieView from 'lottie-react-native';
 import { StyleSheet, type StyleProp, View, type ViewStyle } from 'react-native';
 
+import { STILL_FRAME_PROGRESS, useReducedMotion } from '@/hooks/use-reduced-motion';
 import moneyStack from '@/assets/animations/money-stack.json';
 import paymentSuccess from '@/assets/animations/payment-success.json';
 import settledBill from '@/assets/animations/settled-bill.json';
@@ -18,11 +19,15 @@ type SettleLottieProps = {
 };
 
 export function SettleLottie({ variant, loop = true, style }: SettleLottieProps) {
+  const reduced = useReducedMotion();
+
   return (
     <View pointerEvents="none" style={style}>
       <LottieView
-        autoPlay
-        loop={loop}
+        key={reduced ? 'still' : 'moving'}
+        autoPlay={!reduced}
+        loop={reduced ? false : loop}
+        progress={reduced ? STILL_FRAME_PROGRESS[variant] : undefined}
         renderMode="AUTOMATIC"
         source={sources[variant]}
         style={StyleSheet.absoluteFill}
