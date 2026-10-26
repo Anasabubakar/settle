@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 import { ActionButton, formatMoney, Pill, ProgressMeter, Surface } from '@/components/ui/primitives';
+import { motionDuration, useReducedMotion } from '@/hooks/use-reduced-motion';
 import { SettleLottie } from '@/components/settle-lottie';
 import { Fonts, SettleColors } from '@/constants/theme';
 import type { Bill } from '@/types/domain';
@@ -29,6 +30,9 @@ export type BillCardProps = {
 
 export function BillCard({ bill, onPass, onAsk, onFund, disabled = false }: BillCardProps) {
   const position = useRef(new Animated.ValueXY()).current;
+  const reducedMotion = useReducedMotion();
+  const reducedRef = useRef(reducedMotion);
+  reducedRef.current = reducedMotion;
   const animating = useRef(false);
   const { width } = useWindowDimensions();
   const exitDistance = Math.max(width, 520) * 1.15;
@@ -40,7 +44,7 @@ export function BillCard({ bill, onPass, onAsk, onFund, disabled = false }: Bill
     animating.current = true;
     Animated.timing(position, {
       toValue: { x: direction * exitDistanceRef.current, y: 8 },
-      duration: 260,
+      duration: motionDuration(reducedRef.current, 260),
       useNativeDriver: true,
     }).start(({ finished }) => {
       if (finished) {
@@ -53,6 +57,10 @@ export function BillCard({ bill, onPass, onAsk, onFund, disabled = false }: Bill
   };
 
   const resetCard = () => {
+    if (reducedRef.current) {
+      position.setValue({ x: 0, y: 0 });
+      return;
+    }
     Animated.spring(position, {
       toValue: { x: 0, y: 0 },
       tension: 72,
@@ -102,7 +110,7 @@ export function BillCard({ bill, onPass, onAsk, onFund, disabled = false }: Bill
       {
         rotate: position.x.interpolate({
           inputRange: [-240, 0, 240],
-          outputRange: ['-4deg', '0deg', '4deg'],
+          outputRange: reducedMotion ? ['0deg', '0deg', '0deg'] : ['-4deg', '0deg', '4deg'],
           extrapolate: 'clamp',
         }),
       },
