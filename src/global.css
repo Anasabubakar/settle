@@ -1,0 +1,27 @@
+:root {
+  --font-display: ArchivoBlack_400Regular, Impact, ui-sans-serif, system-ui, sans-serif;
+  --font-body: SpaceGrotesk_400Regular, ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #fbf3e2;
+  background-image: radial-gradient(circle, rgba(24, 19, 14, 0.17) 1px, transparent 1.1px);
+  background-size: 18px 18px;
+  color: #18130e;
+  font-family: var(--font-body);
+}
+
+* {
+  box-sizing: border-box;
+}
