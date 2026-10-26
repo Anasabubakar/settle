@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a reproducible problem in Settle.
+title: "bug: "
+labels: [bug, triage]
+body:
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: Never include personal bills, wallet keys, or account numbers.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+*** Add File: /home/gamp/Desktop/Projects/settle/.github/ISSUE_TEMPLATE/feature_request.yml
+name: Feature proposal
+description: Suggest a focused, safe improvement.
+title: "proposal: "
+labels: [enhancement, triage]
+body:
+  - type: textarea
+    attributes:
+      label: Problem
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed approach
+      description: Explain privacy, safety, and settlement implications.
+    validations:
+      required: true
+*** Add File: /home/gamp/Desktop/Projects/settle/.github/ISSUE_TEMPLATE/config.yml
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: mailto:anasabubakar7000@gmail.com
+    about: Report security or privacy concerns privately.
