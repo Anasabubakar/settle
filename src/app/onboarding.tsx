@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { motionDuration, useReducedMotion } from '@/hooks/use-reduced-motion';
 import { SettleLottie } from '@/components/settle-lottie';
 import { Fonts, SettleColors } from '@/constants/theme';
 
@@ -17,6 +18,7 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const [index, setIndex] = useState(0);
   const fade = useRef(new Animated.Value(1)).current;
+  const reducedMotion = useReducedMotion();
   const slide = slides[index];
 
   const finish = async () => {
@@ -26,9 +28,9 @@ export default function OnboardingScreen() {
 
   const advance = () => {
     if (index === slides.length - 1) { void finish(); return; }
-    Animated.timing(fade, { duration: 140, toValue: 0, useNativeDriver: true }).start(() => {
+    Animated.timing(fade, { duration: motionDuration(reducedMotion, 140), toValue: 0, useNativeDriver: true }).start(() => {
       setIndex((value) => value + 1);
-      Animated.timing(fade, { duration: 240, toValue: 1, useNativeDriver: true }).start();
+      Animated.timing(fade, { duration: motionDuration(reducedMotion, 240), toValue: 1, useNativeDriver: true }).start();
     });
   };
 

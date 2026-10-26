@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { useReducedMotion } from '@/hooks/use-reduced-motion';
 import { SettleLottie } from '@/components/settle-lottie';
 import { Fonts, SettleColors } from '@/constants/theme';
 
@@ -19,7 +20,13 @@ export default function LandingScreen() {
   const mobile = width < 760;
   const float = useRef(new Animated.Value(0)).current;
 
+  const reducedMotion = useReducedMotion();
+
   useEffect(() => {
+    if (reducedMotion) {
+      float.setValue(0);
+      return;
+    }
     const motion = Animated.loop(
       Animated.sequence([
         Animated.timing(float, { duration: 1800, toValue: 1, useNativeDriver: true }),
@@ -28,7 +35,7 @@ export default function LandingScreen() {
     );
     motion.start();
     return () => motion.stop();
-  }, [float]);
+  }, [float, reducedMotion]);
 
   const appHref = mobile ? '/onboarding' : '/discover';
 

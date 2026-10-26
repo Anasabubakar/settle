@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BillCard } from '@/components/bill-card';
 import { ContributionSheet } from '@/components/contribution-sheet';
 import { KindGestureSheet, type KindGestureRequest } from '@/components/kind-gesture-sheet';
+import { useReducedMotion } from '@/hooks/use-reduced-motion';
 import { SettleLottie } from '@/components/settle-lottie';
 import { demoBills, formatMoney } from '@/data/bills';
 import { Fonts, SettleColors } from '@/constants/theme';
@@ -23,6 +24,7 @@ export default function DiscoverScreen() {
   const { width } = useWindowDimensions();
   const wide = width >= 880;
   const expansive = width >= 1260;
+  const reducedMotion = useReducedMotion();
   const [filter, setFilter] = useState<Filter>('all');
   const [cursor, setCursor] = useState(0);
   const [fundingBill, setFundingBill] = useState<Bill | null>(null);
@@ -155,7 +157,7 @@ export default function DiscoverScreen() {
         <KindGestureSheet visible bill={gestureBill} onClose={() => setGestureBill(null)} onSubmit={submitGesture} />
       ) : null}
 
-      <Modal visible={Boolean(receipt)} transparent animationType="fade" onRequestClose={keepBrowsing}>
+      <Modal visible={Boolean(receipt)} transparent animationType={reducedMotion ? 'none' : 'fade'} onRequestClose={keepBrowsing}>
         <View style={styles.receiptOverlay}>
           <View style={styles.receiptCard}>
             <SettleLottie loop={false} style={styles.successMotion} variant="success" />
