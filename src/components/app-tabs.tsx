@@ -1,6 +1,7 @@
 import { Link, Slot, usePathname } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { TestnetStrip } from '@/components/site/testnet-strip';
 import { Fonts, SettleColors } from '@/constants/theme';
 
 export default function AppTabs() {
@@ -9,6 +10,7 @@ export default function AppTabs() {
 
   return (
     <View style={styles.shell}>
+      <TestnetStrip />
       <View style={styles.header}>
         <View style={styles.brandMark}><Text style={styles.brandGlyph}>S</Text></View>
         <Text style={styles.brandText}>SETTLE</Text>
