@@ -182,7 +182,7 @@ export default function ProfileScreen() {
 
             <MoreLinks />
 
-            <Text style={styles.footerNote}>Your generosity is yours. Settle never sells personal giving data.</Text>
+            <Text style={styles.footerNote}>Your generosity is yours. This prototype collects no giving data.</Text>
           </View>
           <SiteFooter webOnly />
         </ScrollView>

@@ -226,7 +226,7 @@ export default function PostBillScreen() {
                 <View style={styles.redactionPanel}>
                   <Text style={styles.panelEyebrow}>PRIVACY CHECK</Text>
                   <Text style={styles.panelTitle}>Hidden from your post</Text>
-                  <Text style={styles.panelText}>The original bill stays private and is revealed only as needed for secure settlement.</Text>
+                  <Text style={styles.panelText}>The original bill stays private and is planned to be revealed only as needed to settle. No file is uploaded today.</Text>
                   <PrivacyToggle label="Home address" onValueChange={setRedactAddress} value={redactAddress} />
                   <PrivacyToggle label="Account number" onValueChange={setRedactAccount} value={redactAccount} />
                   <View style={styles.safePreview}>
