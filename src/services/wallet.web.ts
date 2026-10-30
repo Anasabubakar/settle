@@ -10,7 +10,7 @@ const FREIGHTER_URL = 'https://www.freighter.app';
 
 type FreighterApi = typeof import('@stellar/freighter-api');
 
-async function loadFreighter(): Promise<FreighterApi> {
+async function loadFreighterApi(): Promise<FreighterApi> {
   return import('@stellar/freighter-api');
 }
 
@@ -23,7 +23,7 @@ function freighterError(error: { message?: string } | undefined, fallback: strin
 }
 
 /** Freighter, the browser extension wallet. Signs the server's XDR and nothing else. */
-export function createFreighterWallet(): WalletAdapter {
+export function createFreighterWallet(loadFreighter: () => Promise<FreighterApi> = loadFreighterApi): WalletAdapter {
   return {
     id: 'freighter',
     label: 'Freighter',
