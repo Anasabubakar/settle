@@ -1,18 +1,25 @@
+import type { Metadata } from 'expo-router/server';
+import { PAGES } from '@/content/site';
 import { Link } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
+import { SiteFooter } from '@/components/site/site-footer';
 import { SettleLottie } from '@/components/settle-lottie';
 import { Fonts, SettleColors } from '@/constants/theme';
 
 const benefits = [
-  { color: SettleColors.purple, icon: '↗', title: 'Share the real bill', copy: 'Upload a photo or PDF. AI extracts the useful details and masks the private ones.' },
-  { color: SettleColors.orange, icon: '✦', title: 'Get matched', copy: 'Verified asks reach people who care about that category, location, and urgency.' },
-  { color: SettleColors.acid, icon: '₿', title: 'Settle on Stellar', copy: 'Fund all or part in USDC. Payment settles with a permanent transaction receipt.' },
-  { color: SettleColors.pink, icon: '♥', title: 'Keep it human', copy: 'A thank-you or kind gesture can be requested, but support is never conditional.' },
+  { color: SettleColors.purple, icon: '↗', title: 'Share the real bill', copy: 'Pick a photo or PDF. In this prototype a simulated review shows how details would be extracted and private ones masked. Your file stays on your device.' },
+  { color: SettleColors.orange, icon: '◆', title: 'Get matched', copy: 'Supporters browse sample requests by category and urgency. The people and bills here are sample data.' },
+  { color: SettleColors.acid, icon: '₿', title: 'Settle on Stellar', copy: 'The design lets a supporter fund all or part in USDC on Stellar. Today funding is a testnet preview and no real funds move.' },
+  { color: SettleColors.pink, icon: '♥', title: 'Keep it human', copy: 'A Kind Gesture is optional and can be declined. Support is never conditional.' },
 ];
+
+export function generateMetadata(): Metadata {
+  return { title: PAGES.home.title, description: PAGES.home.description };
+}
 
 export default function LandingScreen() {
   const { width } = useWindowDimensions();
@@ -50,9 +57,9 @@ export default function LandingScreen() {
             </View>
             {!compact ? (
               <View style={styles.nav}>
-                <Text style={styles.navText}>HOW IT WORKS</Text>
-                <Text style={styles.navText}>STELLAR</Text>
-                <Text style={styles.navText}>SAFETY</Text>
+                <Link href="/how-it-works" style={styles.navText}>HOW IT WORKS</Link>
+                <Link href="/about" style={styles.navText}>ABOUT</Link>
+                <Link href="/guidelines" style={styles.navText}>GUIDELINES</Link>
               </View>
             ) : null}
             <Link href={appHref} asChild>
@@ -62,19 +69,19 @@ export default function LandingScreen() {
 
           <View style={[styles.hero, compact && styles.heroCompact]}>
             <View style={styles.heroCopy}>
-              <View style={styles.pill}><Text style={styles.pillText}>AI-VERIFIED · STELLAR-SETTLED</Text></View>
+              <View style={styles.pill}><Text style={styles.pillText}>TESTNET PROTOTYPE · SAMPLE DATA</Text></View>
               <Text style={[styles.heroTitle, compact && styles.heroTitleCompact]}>REAL BILLS.{`\n`}REAL RELIEF.</Text>
               <Text style={[styles.heroAccent, compact && styles.heroAccentCompact]}>ONE SWIPE AWAY.</Text>
               <View style={styles.orangeLine} />
-              <Text style={styles.heroBody}>People share essential bills. Generous humans choose one, fund any amount, and settle it directly—fast, transparent, and on-chain.</Text>
+              <Text style={styles.heroBody}>People share essential bills. Supporters choose one and fund any amount, with the intent that the provider is paid directly on Stellar. This prototype runs on testnet with sample data. No real funds move.</Text>
               <View style={[styles.heroActions, compact && styles.heroActionsCompact]}>
                 <Link href={appHref} asChild><Pressable style={styles.primaryCta}><Text style={styles.primaryCtaText}>START SWIPING</Text></Pressable></Link>
                 <Link href="/post" asChild><Pressable style={styles.secondaryCta}><Text style={styles.secondaryCtaText}>ASK FOR HELP</Text></Pressable></Link>
               </View>
               <View style={styles.trustRow}>
-                <Text style={styles.trustItem}>⚡ INSTANT FINALITY</Text>
-                <Text style={styles.trustItem}>◈ USDC ON STELLAR</Text>
-                <Text style={styles.trustItem}>✓ PRIVATE BY DEFAULT</Text>
+                <Text style={styles.trustItem}>◈ TESTNET ONLY</Text>
+                <Text style={styles.trustItem}>◈ SAMPLE DATA</Text>
+                <Text style={styles.trustItem}>◈ FILES STAY ON DEVICE</Text>
               </View>
             </View>
 
@@ -89,11 +96,11 @@ export default function LandingScreen() {
                 <View style={styles.progress}><View style={styles.progressFill} /></View>
                 <View style={styles.actionRow}><View style={styles.pass}><Text style={styles.actionText}>← PASS</Text></View><View style={styles.fund}><Text style={styles.actionText}>♥ FUND</Text></View></View>
               </View>
-              <View style={styles.stellarChip}><Text style={styles.stellarChipTop}>SETTLES IN</Text><Text style={styles.stellarChipMain}>~5 SECONDS</Text><Text style={styles.stellarChipBottom}>STELLAR MAINNET</Text></View>
+              <View style={styles.stellarChip}><Text style={styles.stellarChipTop}>DESIGNED FOR</Text><Text style={styles.stellarChipMain}>STELLAR USDC</Text><Text style={styles.stellarChipBottom}>TESTNET PREVIEW</Text></View>
             </Animated.View>
           </View>
 
-          <View style={styles.ticker}><Text style={styles.tickerText}>VERIFIED BILLS ✦ PARTIAL OR FULL SUPPORT ✦ STELLAR USDC ✦ OPTIONAL KIND GESTURES ✦ PUBLIC RECEIPTS ✦ HUMAN CHOICE</Text></View>
+          <View style={styles.ticker}><Text style={styles.tickerText}>SAMPLE BILLS ◆ PARTIAL OR FULL SUPPORT ◆ STELLAR TESTNET ◆ OPTIONAL KIND GESTURES ◆ NO REAL FUNDS ◆ HUMAN CHOICE</Text></View>
 
           <View style={styles.section}>
             <View style={styles.sectionPill}><Text style={styles.sectionPillText}>HOW SETTLE WORKS</Text></View>
@@ -117,24 +124,25 @@ export default function LandingScreen() {
               <Text style={styles.terminalMuted}>asset: USDC · amount: 42.50</Text>
               <Text style={styles.terminalMuted}>destination: verified provider</Text>
               <Text style={styles.terminalMuted}>memo: SETTLE-BILL-8402</Text>
-              <Text style={styles.terminalSuccess}>✓ confirmed · ledger 59,482,113</Text>
+              <Text style={styles.terminalSuccess}>(sample output, nothing was sent)</Text>
             </View>
             <View style={styles.stellarCopy}>
               <View style={styles.sectionPill}><Text style={styles.sectionPillText}>BUILT ON STELLAR</Text></View>
               <Text style={styles.stellarTitle}>MONEY MOVES.{`\n`}TRUST STAYS.</Text>
-              <Text style={styles.stellarBody}>Every contribution creates a traceable Stellar payment. The app supports USDC, partial funding, transaction memos, and direct-to-provider settlement.</Text>
+              <Text style={styles.stellarBody}>The intended design is a traceable Stellar payment for each contribution, with partial funding and direct-to-provider settlement. Today the app previews this on testnet. See how it works for what is built and what is not.</Text>
               <View style={styles.stellarPoints}>
-                {['Wallet-based identity and signing', 'USDC path payments with low fees', 'Bill-specific memo and transaction hash', 'No custody of a giver’s funds'].map((point) => <Text key={point} style={styles.stellarPoint}>✦ {point}</Text>)}
+                {['Freighter on web; mobile not built', 'Wallet signs; the app holds no key', 'Settlement API chooses the destination', 'Mainnet is not enabled'].map((point) => <Text key={point} style={styles.stellarPoint}>◆ {point}</Text>)}
               </View>
             </View>
           </View>
 
           <View style={styles.finalCta}>
             <SettleLottie loop={false} style={styles.finalMotion} variant="success" />
-            <Text style={styles.finalTitle}>MAKE SOMEBODY’S WEEK.</Text>
-            <Text style={styles.finalCopy}>Swipe a real bill. Choose an amount. Settle it on Stellar.</Text>
+            <Text style={styles.finalTitle}>TRY THE PROTOTYPE.</Text>
+            <Text style={styles.finalCopy}>Try the prototype. Swipe a sample bill and preview a testnet payment.</Text>
             <Link href={appHref} asChild><Pressable style={styles.finalButton}><Text style={styles.finalButtonText}>LAUNCH SETTLE →</Text></Pressable></Link>
           </View>
+          <SiteFooter />
         </ScrollView>
       </SafeAreaView>
     </View>
