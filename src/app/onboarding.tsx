@@ -1,3 +1,5 @@
+import type { Metadata } from 'expo-router/server';
+import { PAGES } from '@/content/site';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
@@ -13,6 +15,10 @@ const slides = [
   { accent: SettleColors.orange, animation: 'money' as const, eyebrow: '02 · SETTLE', title: 'Pay in USDC on Stellar.', copy: 'Connect a wallet, choose all or part, then sign one low-fee Stellar transaction.' },
   { accent: SettleColors.pink, animation: 'success' as const, eyebrow: '03 · PROVE', title: 'Every good deed gets a receipt.', copy: 'Track the ledger, transaction hash, provider route, and the people you helped.' },
 ];
+
+export function generateMetadata(): Metadata {
+  return { title: PAGES.onboarding.title, description: PAGES.onboarding.description };
+}
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -40,7 +46,7 @@ export default function OnboardingScreen() {
       <Animated.View style={[styles.content, { opacity: fade }]}> 
         <View style={[styles.artFrame, { backgroundColor: slide.accent }]}>
           <View style={styles.artInner}><SettleLottie loop={slide.animation !== 'success'} style={styles.motion} variant={slide.animation} /></View>
-          <View style={styles.starOne}><Text style={styles.star}>✦</Text></View><View style={styles.starTwo}><Text style={styles.star}>✦</Text></View>
+          <View style={styles.starOne}><Text style={styles.star}>◆</Text></View><View style={styles.starTwo}><Text style={styles.star}>◆</Text></View>
         </View>
         <Text style={styles.eyebrow}>{slide.eyebrow}</Text>
         <Text style={styles.title}>{slide.title}</Text>
