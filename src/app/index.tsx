@@ -122,7 +122,7 @@ export default function LandingScreen() {
               <Text style={styles.terminalBrand}>SETTLE / STELLAR</Text>
               <Text style={styles.terminalLine}><Text style={styles.orange}>$</Text> build contribution</Text>
               <Text style={styles.terminalMuted}>asset: USDC · amount: 42.50</Text>
-              <Text style={styles.terminalMuted}>destination: verified provider</Text>
+              <Text style={styles.terminalMuted}>destination: set by the server</Text>
               <Text style={styles.terminalMuted}>memo: SETTLE-BILL-8402</Text>
               <Text style={styles.terminalSuccess}>(sample output, nothing was sent)</Text>
             </View>
