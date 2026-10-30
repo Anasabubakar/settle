@@ -1,3 +1,5 @@
+import type { Metadata } from 'expo-router/server';
+import { PAGES } from '@/content/site';
 import { useMemo, useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +10,7 @@ import { KindGestureSheet, type KindGestureRequest } from '@/components/kind-ges
 import { useReducedMotion } from '@/hooks/use-reduced-motion';
 import { SettleLottie } from '@/components/settle-lottie';
 import { demoBills, formatMoney } from '@/data/bills';
+import { SiteFooter } from '@/components/site/site-footer';
 import { Fonts, SettleColors } from '@/constants/theme';
 import type { Bill, BillCategory, Money } from '@/types/domain';
 
@@ -19,6 +22,10 @@ const filters: { id: Filter; label: string; description: string }[] = [
   { id: 'medical', label: 'Health', description: 'Care and prescriptions' },
   { id: 'education', label: 'Education', description: 'Fees and learning access' },
 ];
+
+export function generateMetadata(): Metadata {
+  return { title: PAGES.discover.title, description: PAGES.discover.description };
+}
 
 export default function DiscoverScreen() {
   const { width } = useWindowDimensions();
@@ -145,8 +152,9 @@ export default function DiscoverScreen() {
             ) : null}
           </View>
           <View style={styles.marquee}>
-            <Text style={styles.marqueeText}>VERIFIED BILLS  ✦  DIRECT PAYMENTS  ✦  PARTIAL OR FULL SUPPORT  ✦  OPTIONAL KIND GESTURES  ✦  HUMAN CHOICE, AI CLARITY</Text>
+            <Text style={styles.marqueeText}>VERIFIED BILLS  ◆  DIRECT PAYMENTS  ◆  PARTIAL OR FULL SUPPORT  ◆  OPTIONAL KIND GESTURES  ◆  HUMAN CHOICE, AI CLARITY</Text>
           </View>
+          <SiteFooter webOnly />
         </ScrollView>
       </SafeAreaView>
 
