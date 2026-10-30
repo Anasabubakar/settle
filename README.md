@@ -31,7 +31,7 @@ An AI-assisted, cross-platform bill-support experience built with Expo and desig
 
 Settle is an evidence-led way to support an essential bill. A requester uploads a bill, Settle extracts and redacts relevant fields, then a supporter can swipe to fund part or all of the verified request. The intended route is provider-direct settlement: help reaches a biller, not a public personal wallet.
 
-Support is never payment for access, labor, publicity, a relationship, or any other personal demand. Optional Kind Gestures are safe acknowledgements that a requester can decline freely.
+Support is never payment for access, labor, publicity, a relationship, or any other personal demand. Optional Kind Gestures are non-transactional acknowledgements that a requester can decline freely.
 
 ## What it does
 
@@ -48,9 +48,27 @@ Support is never payment for access, labor, publicity, a relationship, or any ot
 | Web app | ✅ Interactive | Expo web export available |
 | Android / iOS | ✅ Expo source | Use Expo Go for the current UI prototype |
 | Bill uploads | ✅ Local picker flow | No real documents are sent to a server yet |
-| AI review | 🟡 Product simulation | Needs private, audited backend processing |
-| Stellar settlement | 🟡 Testnet foundation | No wallet adapter, quote service, or live transaction yet |
+| AI review | 🟡 Product simulation | A scripted review with sample fields. No model reads a bill. Needs private backend processing first |
+| Stellar settlement | 🟡 Testnet foundation | A Freighter wallet adapter exists for web and the separate [settle-api](https://github.com/Anasabubakar/settle-api) is a testnet reference implementation. Funding in the app is still a preview: no payment is created or signed from the UI |
 | Mainnet funds | 🔴 Not enabled | Requires the [readiness guide](docs/stellar-readiness.md) |
+| Informational pages | ✅ Built | How it works, guidelines, about, FAQ, privacy and terms. See [Pages](#pages) |
+
+## Pages
+
+The web build (and the Profile screen's More section on iOS and Android) includes these pages. Each web route sets its own document title and meta description, has a skip link, and works from 375 px wide.
+
+| Route | Purpose |
+|---|---|
+| `/how-it-works` | The flow from bill to receipt, with each step marked built, simulated or not built |
+| `/guidelines` | Community rules: support is never payment for anything, Kind Gestures are optional, eligible bills, and what is still undecided |
+| `/about` | What Settle is, the maintainer, repositories, contributing and security links, status table |
+| `/faq` | Plain answers about real money, files, testnet, payees and AI review |
+| `/privacy` | What stays on device, the one stored key, network requests and hosting |
+| `/terms` | Testnet prototype terms: no real value, MIT software as is, not advice |
+
+Page copy and statuses live in `src/content/site.ts`. Update them in the same change as any behavior they describe, for example when the funding sheet starts requesting real quotes.
+
+`app.json` sets `web.output` to `static`, so `npx expo export --platform web` writes one HTML file per route (`dist/faq.html`). Serve it with clean URLs (for example Vercel `cleanUrls: true` or `npx serve dist`) so `/faq` resolves.
 
 ## Quick start
 
@@ -91,6 +109,8 @@ The client never derives USDC from a fiat bill amount, invents a provider destin
 |---|---|
 | `src/app/` | Expo Router screens |
 | `src/components/` | Shared UI, animation, contribution, and gesture flows |
+| `src/components/site/` | Site header menu pieces, footer, and page layout for the informational pages |
+| `src/content/` | Copy, status labels and links for the informational pages |
 | `src/services/stellar.ts` | Client-safe network and server-quote boundary |
 | `src/data/` | Sample data only |
 | `assets/animations/` | Local Lottie assets |
@@ -111,9 +131,10 @@ npx expo-doctor
 - [x] Bill photo/PDF selection and AI-review UI
 - [x] Direct-support guardrails and optional Kind Gestures
 - [x] Stellar testnet configuration and server-quote boundary
+- [x] Informational pages: how it works, guidelines, about, FAQ, privacy, terms
 - [ ] Private evidence storage, redaction, and human review workflow
-- [ ] Provider verification and a settlement API
-- [ ] Testnet wallet signing, confirmation observer, and receipt indexer
+- [ ] Provider verification and a production settlement API (a testnet reference exists in settle-api)
+- [ ] Testnet wallet signing from the funding sheet, confirmation observer, and receipt indexer
 - [ ] Security/compliance review, closed pilot, and mainnet decision
 
 ## Contributing
