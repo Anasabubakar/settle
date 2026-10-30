@@ -12,8 +12,10 @@ import {
 } from 'react-native';
 
 import { ActionButton, formatMoney, Pill, ProgressMeter } from '@/components/ui/primitives';
+import { LiveFundingPanel } from '@/components/live-funding-panel';
 import { Fonts, SettleColors } from '@/constants/theme';
-import { settlementModeLabel } from '@/services/stellar';
+import { minorToInput, parseMinorAmount } from '@/services/amount';
+import { canUseLiveSettlement, settlementModeLabel } from '@/services/stellar';
 import { describeWalletError, getWalletAdapter } from '@/services/wallet';
 import type { Bill, Money } from '@/types/domain';
 
@@ -48,6 +50,7 @@ export function ContributionSheet({
   const [amountText, setAmountText] = useState('');
   const [walletConnected, setWalletConnected] = useState(false);
   const [walletNote, setWalletNote] = useState<string | null>(null);
+  const live = canUseLiveSettlement();
 
   // Checks for a real wallet. The default flow stays a testnet preview either way, and nothing is signed here.
   const checkWallet = async () => {
@@ -55,8 +58,8 @@ export function ContributionSheet({
       const availability = await getWalletAdapter().availability();
       setWalletNote(
         availability.available
-          ? 'Wallet found. Signing is only enabled once a verified server quote is configured; this is a preview.'
-          : `${availability.reason} Continuing with the testnet preview.`,
+          ? 'Wallet found. This build has no settlement service configured, so nothing will be signed. This is a simulated demo.'
+          : `${availability.reason} Continuing with the simulated demo.`,
       );
     } catch (error) {
       setWalletNote(describeWalletError(error));
@@ -72,7 +75,7 @@ export function ContributionSheet({
     }
   }, [bill.id, remainingMinor, suggestedAmounts, visible]);
 
-  const amountMinor = inputToMinor(amountText);
+  const amountMinor = parseMinorAmount(amountText);
   const invalidAmount = amountMinor <= 0 || amountMinor > remainingMinor;
   const progress = bill.total.amountMinor > 0 ? bill.funded.amountMinor / bill.total.amountMinor : 0;
 
@@ -195,11 +198,11 @@ export function ContributionSheet({
               </View>
 
               <View style={styles.stellarPanel}>
-                <View style={styles.stellarLogo}><Text style={styles.stellarLogoText}>✦</Text></View>
+                <View style={styles.stellarLogo}><Text style={styles.stellarLogoText}>S</Text></View>
                 <View style={styles.stellarCopy}>
                   <Text style={styles.stellarTitle}>USDC ON STELLAR</Text>
-                  <Text style={styles.stellarText}>{walletConnected ? 'Wallet signing preview · no funds move' : 'Your wallet signs. Settle never holds your funds.'}</Text>
-                  <Text style={styles.stellarQuote}>A verified server quote is required before any live settlement.</Text>
+                  <Text style={styles.stellarText}>{live ? 'Your wallet signs the exact payment the server quoted. Settle never holds your funds.' : walletConnected ? 'Simulated demo · nothing is signed and no funds move' : 'Demo mode: nothing is signed and no funds move.'}</Text>
+                  <Text style={styles.stellarQuote}>{live ? 'Testnet only. Test USDC has no real value.' : 'No settlement service is configured for this build.'}</Text>
                   {walletNote ? (
                     <Text accessibilityLiveRegion="polite" accessibilityRole="alert" style={styles.stellarQuote}>{walletNote}</Text>
                   ) : null}
@@ -207,15 +210,17 @@ export function ContributionSheet({
                 <View style={styles.networkBadge}><Text style={styles.networkBadgeText}>{settlementModeLabel().toUpperCase()}</Text></View>
               </View>
 
-              {walletConnected ? (
+              {live ? (
+                <LiveFundingPanel bill={bill} amountMinor={amountMinor} amountValid={!invalidAmount} onClose={onClose} />
+              ) : walletConnected ? (
                 <ActionButton
-                  label={invalidAmount ? 'Choose a valid amount' : `Preview Stellar payment · ${formatMoney(amountMinor / 100, bill.total.currency)}`}
+                  label={invalidAmount ? 'Choose a valid amount' : `Simulate payment · ${formatMoney(amountMinor / 100, bill.total.currency)}`}
                   disabled={invalidAmount}
                   loading={submitting}
                   onPress={() => onConfirm({ amountMinor, currency: bill.total.currency }, bill)}
                 />
               ) : (
-                <ActionButton label="Preview Stellar wallet" disabled={false} onPress={() => void checkWallet()} />
+                <ActionButton label="Check for a wallet (demo)" disabled={false} onPress={() => void checkWallet()} />
               )}
             </ScrollView>
           </View>
@@ -223,16 +228,6 @@ export function ContributionSheet({
       </View>
     </Modal>
   );
-}
-
-function minorToInput(minor: number) {
-  return (minor / 100).toFixed(minor % 100 === 0 ? 0 : 2);
-}
-
-function inputToMinor(value: string) {
-  const normalized = value.replace(/,/g, '');
-  const amount = Number.parseFloat(normalized);
-  return Number.isFinite(amount) ? Math.round(amount * 100) : 0;
 }
 
 const styles = StyleSheet.create({
