@@ -11,6 +11,7 @@ import {
   type QuoteInput,
 } from '@/services/settlement-client';
 import { STELLAR_NETWORK } from '@/services/stellar';
+import type { WalletAdapter } from '@/services/wallet';
 
 /**
  * The supporter funding flow, as plain functions so every honest-failure rule is testable:
@@ -187,4 +188,31 @@ export async function awaitConfirmation(
   return outcome;
 }
 
-export { requestQuote, submitSignedPayment };
+/** Quote from the server, refused unless it matches what the supporter asked for. */
+export async function fetchVerifiedQuote(request: QuoteInput, idempotencyKey: string): Promise<ApiQuote> {
+  const quote = await requestQuote(request, idempotencyKey);
+  verifyQuote(quote, request);
+  return quote;
+}
+
+/** Asks the wallet to sign exactly the quoted transaction, and refuses anything but that transaction plus a signature. */
+export async function signQuote(quote: ApiQuote, wallet: Pick<WalletAdapter, 'signTransaction'>, now: number = Date.now()): Promise<string> {
+  if (Date.parse(quote.expiresAt) <= now) {
+    throw new FundingError('quote_expired', 'This quote expired before it was signed. Nothing was paid. Request a new quote.');
+  }
+  const signedXdr = await wallet.signTransaction({ unsignedXdr: quote.unsignedXdr, networkPassphrase: quote.networkPassphrase });
+  verifySignedMatchesUnsigned(quote.unsignedXdr, signedXdr, quote.networkPassphrase);
+  return signedXdr;
+}
+
+/** Submits the signed payment and waits for the server's independent confirmation. */
+export async function submitAndConfirm(
+  quote: ApiQuote,
+  signedXdr: string,
+  idempotencyKey: string,
+  options: PollOptions & { onSubmitted?: () => void } = {},
+): Promise<FundingOutcome> {
+  const payment = await submitSignedPayment({ quoteId: quote.quoteId, signedXdr }, idempotencyKey);
+  options.onSubmitted?.();
+  return awaitConfirmation(payment, quote, options);
+}

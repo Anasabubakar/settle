@@ -6,9 +6,9 @@ import { Fonts, SettleColors } from '@/constants/theme';
 import { stroopsToAmount } from '@/services/amount';
 import {
   FundingError,
-  awaitConfirmation,
-  verifyQuote,
-  verifySignedMatchesUnsigned,
+  fetchVerifiedQuote,
+  signQuote,
+  submitAndConfirm,
   type FundingOutcome,
 } from '@/services/funding-flow';
 import {
@@ -17,8 +17,6 @@ import {
   getBill,
   newIdempotencyKey,
   receiptUrl,
-  requestQuote,
-  submitSignedPayment,
   type ApiBill,
   type ApiQuote,
 } from '@/services/settlement-client';
@@ -128,9 +126,9 @@ export function LiveFundingPanel({ bill, amountMinor, amountValid, onClose }: Li
       safeSet({ name: 'working', label: 'Requesting a quote from the settlement service' });
       quoteKey.current ??= newIdempotencyKey();
       const request = { billId: bill.id, amountMinor, currency: bill.total.currency, sourceAccount: session.publicKey };
-      const quote = await requestQuote(request, quoteKey.current);
-      quoteKey.current = null;
-      verifyQuote(quote, request);
+      const key = quoteKey.current;
+      const quote = await fetchVerifiedQuote(request, key);
+      quoteKey.current = null; // the key is kept only when no answer arrived, so a retry replays instead of reserving twice
       paymentKey.current = newIdempotencyKey();
       setNow(clock());
       safeSet({ name: 'review', quote, sourceAccount: session.publicKey });
@@ -141,16 +139,10 @@ export function LiveFundingPanel({ bill, amountMinor, amountValid, onClose }: Li
   };
 
   const signAndSubmit = async (quote: ApiQuote, sourceAccount: string) => {
-    if (Date.parse(quote.expiresAt) <= clock()) {
-      safeSet({ name: 'problem', title: 'Quote expired', message: 'This quote expired before it was signed. Nothing was paid. Request a new quote.', expired: true });
-      return;
-    }
     safeSet({ name: 'working', label: 'Waiting for your wallet to sign' });
     let signedXdr: string;
     try {
-      const wallet = getWalletAdapter();
-      signedXdr = await wallet.signTransaction({ unsignedXdr: quote.unsignedXdr, networkPassphrase: quote.networkPassphrase });
-      verifySignedMatchesUnsigned(quote.unsignedXdr, signedXdr, quote.networkPassphrase);
+      signedXdr = await signQuote(quote, getWalletAdapter());
     } catch (error) {
       safeSet(problemFrom(error));
       return;
@@ -162,9 +154,9 @@ export function LiveFundingPanel({ bill, amountMinor, amountValid, onClose }: Li
     safeSet({ name: 'working', label: 'Submitting the signed payment' });
     paymentKey.current ??= newIdempotencyKey();
     try {
-      const payment = await submitSignedPayment({ quoteId: quote.quoteId, signedXdr }, paymentKey.current);
-      safeSet({ name: 'working', label: 'Waiting for independent confirmation on Stellar' });
-      const outcome = await awaitConfirmation(payment, quote);
+      const outcome = await submitAndConfirm(quote, signedXdr, paymentKey.current, {
+        onSubmitted: () => safeSet({ name: 'working', label: 'Waiting for independent confirmation on Stellar' }),
+      });
       safeSet({ name: 'result', outcome, quote });
     } catch (error) {
       if (error instanceof SettlementApiError && error.outcomeUnknown) {
