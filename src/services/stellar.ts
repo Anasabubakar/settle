@@ -5,8 +5,24 @@ const runtime = {
   network: process.env.EXPO_PUBLIC_STELLAR_NETWORK ?? 'testnet',
   horizonUrl: process.env.EXPO_PUBLIC_STELLAR_HORIZON_URL,
   rpcUrl: process.env.EXPO_PUBLIC_STELLAR_RPC_URL,
-  settlementApiUrl: process.env.EXPO_PUBLIC_SETTLEMENT_API_URL,
 } as const;
+
+/**
+ * Base URL of the settlement API, or undefined when this build runs in demo mode.
+ * EXPO_PUBLIC_SETTLE_API_URL is the documented name; EXPO_PUBLIC_SETTLEMENT_API_URL is the older spelling and still read.
+ * Read at call time (Expo inlines each literal reference at build time). Public by design: never put a secret here.
+ */
+export function settlementApiUrl(): string | undefined {
+  const raw = (process.env.EXPO_PUBLIC_SETTLE_API_URL || process.env.EXPO_PUBLIC_SETTLEMENT_API_URL || '').trim();
+  if (!raw) return undefined;
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') return undefined;
+    return raw.replace(/\/+$/, '');
+  } catch {
+    return undefined;
+  }
+}
 
 export type StellarNetworkName = 'testnet' | 'mainnet';
 
@@ -47,12 +63,28 @@ export type PaymentAuthorization = {
 
 export type PaymentLifecycle = 'draft' | 'quote_requested' | 'awaiting_signature' | 'submitted' | 'confirmed' | 'failed';
 
+export type SettlementMode = 'demo' | 'testnet' | 'mainnet_blocked';
+
+/**
+ * demo: no API configured, nothing is signed or sent (simulated).
+ * testnet: an API is configured and the build targets testnet, so a real testnet payment can be made.
+ * mainnet_blocked: the build asks for mainnet; settlement is disabled until a mainnet release exists.
+ */
+export function settlementMode(): SettlementMode {
+  if (stellarNetwork === 'mainnet') return 'mainnet_blocked';
+  return settlementApiUrl() ? 'testnet' : 'demo';
+}
+
+/** Live settlement is testnet only. Mainnet is deliberately never enabled from the client. */
 export function canUseLiveSettlement() {
-  return stellarNetwork === 'mainnet' && Boolean(runtime.settlementApiUrl);
+  return settlementMode() === 'testnet';
 }
 
 export function settlementModeLabel() {
-  return canUseLiveSettlement() ? 'Mainnet settlement' : 'Testnet preview';
+  const mode = settlementMode();
+  if (mode === 'testnet') return 'Testnet settlement';
+  if (mode === 'mainnet_blocked') return 'Mainnet disabled';
+  return 'Demo (simulated)';
 }
 
 export function createPaymentAuthorization(billId: string, quote: SettlementQuote): PaymentAuthorization {
