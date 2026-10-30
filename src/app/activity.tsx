@@ -1,3 +1,5 @@
+import type { Metadata } from 'expo-router/server';
+import { PAGES } from '@/content/site';
 import { useMemo, useState } from 'react';
 import {
   Pressable,
@@ -8,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SiteFooter } from '@/components/site/site-footer';
 import { Fonts, SettleColors } from '@/constants/theme';
 
 const displayFont = Fonts.display ?? Fonts.sans;
@@ -48,6 +51,10 @@ const contributions = [
     progress: 0.63,
   },
 ];
+
+export function generateMetadata(): Metadata {
+  return { title: PAGES.activity.title, description: PAGES.activity.description };
+}
 
 export default function ActivityScreen() {
   const { width } = useWindowDimensions();
@@ -181,6 +188,7 @@ export default function ActivityScreen() {
               </View>
             </View>
           </View>
+          <SiteFooter webOnly />
         </ScrollView>
       </SafeAreaView>
     </View>
