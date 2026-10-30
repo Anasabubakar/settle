@@ -1,3 +1,5 @@
+import type { Metadata } from 'expo-router/server';
+import { PAGES } from '@/content/site';
 import { useEffect, useRef, useState } from 'react';
 import * as DocumentPicker from 'expo-document-picker';
 import { Image } from 'expo-image';
@@ -15,6 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SettleLottie } from '@/components/settle-lottie';
+import { SiteFooter } from '@/components/site/site-footer';
 import { Fonts, SettleColors } from '@/constants/theme';
 
 const displayFont = Fonts.display ?? Fonts.sans;
@@ -23,6 +26,10 @@ const bodyBoldFont = Fonts.bodyBold ?? Fonts.sans;
 
 type FlowStep = 'upload' | 'scan' | 'review' | 'published';
 type SelectedBill = { mimeType?: string; name: string; size?: number; uri: string };
+
+export function generateMetadata(): Metadata {
+  return { title: PAGES.post.title, description: PAGES.post.description };
+}
 
 export default function PostBillScreen() {
   const { width } = useWindowDimensions();
@@ -260,6 +267,7 @@ export default function PostBillScreen() {
               </View>
             )}
           </View>
+          <SiteFooter webOnly />
         </ScrollView>
       </SafeAreaView>
     </View>
