@@ -55,7 +55,7 @@ export default function OnboardingScreen() {
       <View style={styles.footer}>
         <View style={styles.dots}>{slides.map((item, dot) => <View key={item.title} style={[styles.dot, dot === index && styles.dotActive]} />)}</View>
         <Pressable onPress={advance} style={({ pressed }) => [styles.next, pressed && styles.pressed]}><Text style={styles.nextText}>{index === slides.length - 1 ? 'ENTER SETTLE' : 'NEXT →'}</Text></Pressable>
-        <Text style={styles.network}>STELLAR MAINNET · USDC READY</Text>
+        <Text style={styles.network}>STELLAR TESTNET · PREVIEW</Text>
       </View>
     </SafeAreaView>
   );
