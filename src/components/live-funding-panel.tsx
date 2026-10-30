@@ -176,6 +176,7 @@ export function LiveFundingPanel({ bill, amountMinor, amountValid, onClose }: Li
   if (phase.name === 'working') {
     return (
       <View accessibilityLiveRegion="polite" style={styles.panel}>
+        <Text style={styles.body}>{phase.label}</Text>
         <ActionButton label={phase.label} loading disabled onPress={() => undefined} />
         <Text style={styles.small}>Do not close this panel while a payment is being signed or confirmed.</Text>
       </View>
