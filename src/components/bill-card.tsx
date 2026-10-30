@@ -202,7 +202,7 @@ export function BillCard({ bill, onPass, onAsk, onFund, disabled = false }: Bill
             <ActionButton compact icon="♥" label="Fund" onPress={() => onFund(bill)} disabled={disabled} />
           </View>
           <Text style={styles.assurance}>
-            {bill.paysProviderDirectly ? 'Payment goes directly to the provider.' : 'Payment is protected until confirmed.'}
+            {bill.paysProviderDirectly ? 'Payment goes directly to the provider.' : 'Payment is shown as done only after the network confirms it.'}
           </Text>
         </View>
       </Surface>

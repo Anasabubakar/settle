@@ -146,7 +146,7 @@ export default function DiscoverScreen() {
                   <Text style={styles.promiseTitle}>Support without strings</Text>
                   <Text style={styles.promiseText}>Kind Gestures are optional. Members can decline them without affecting a contribution.</Text>
                   <View style={styles.promiseDivider} />
-                  <Text style={styles.promiseFooter}>Payments go directly to verified providers whenever possible.</Text>
+                  <Text style={styles.promiseFooter}>In the design, payment goes to the bill&apos;s provider, not a person.</Text>
                 </View>
               </View>
             ) : null}
