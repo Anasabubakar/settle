@@ -57,3 +57,11 @@ describe('Freighter adapter', () => {
     expect(freighter.signTransaction).not.toHaveBeenCalled();
   });
 });
+
+describe('platform parity', () => {
+  it('wallet.web exports everything wallet.ts does, because Metro resolves @/services/wallet to the .web file on web', () => {
+    const native = require('@/services/wallet') as Record<string, unknown>;
+    const web = require('@/services/wallet.web') as Record<string, unknown>;
+    for (const name of Object.keys(native)) expect(web[name]).toBeDefined();
+  });
+});

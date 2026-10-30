@@ -4,7 +4,10 @@ import {
   createUnavailableWallet,
   WalletError,
   type WalletAdapter,
-} from '@/services/wallet';
+} from '@/services/wallet-core';
+
+// On web, '@/services/wallet' resolves to this file, so everything wallet.ts exports must be exported here too.
+export * from '@/services/wallet-core';
 
 const FREIGHTER_URL = 'https://www.freighter.app';
 
