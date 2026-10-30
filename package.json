@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@types/jest": "30.0.0",
+    "@types/node": "^26.6.6",
     "@types/react": "~19.3.0",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~58.0.4",
@@ -53,7 +54,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "jest"
+    "test": "jest",
+    "test:e2e-local": "jest --testMatch '<rootDir>/__e2e__/**/*.test.ts' --runInBand"
   },
   "private": true,
   "jest": {
