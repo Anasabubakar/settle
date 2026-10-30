@@ -41,7 +41,7 @@ const gestureCopy: Record<KindGesture, { title: string; description: string; ico
   anonymous_thanks: {
     title: 'A private thank-you',
     description: 'They may send a short note without sharing personal details.',
-    icon: '✦',
+    icon: '◆',
   },
   progress_update: {
     title: 'An optional update',
