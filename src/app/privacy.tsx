@@ -35,8 +35,8 @@ export default function PrivacyPage() {
         <Bullets
           items={[
             'Loading the app. Your browser requests the site\'s own files from whichever host serves it: pages, scripts, fonts, animations and images. Fonts and animations are bundled with the app and are not fetched from a third-party font service.',
-            'Your wallet, on web only. The app talks to the Freighter browser extension on your device to see whether it is available. If you press connect, the extension asks you, and the app then reads your public address and which Stellar network the wallet is on. A public address is not a secret. In the current app, no payment is signed.',
-            'The settlement API, only if a build is configured with one. The default build is not. When one is configured, a funding request would send the bill id, the amount in minor units, the currency, your wallet\'s public address and a random idempotency key, and later the signed transaction. It would never send your bill file. The request goes to the address that build was configured with.',
+            'Your wallet, on web only. The app talks to the Freighter browser extension on your device to see whether it is available. If you press connect, the extension asks you, and the app then reads your public address and which Stellar network the wallet is on. A public address is not a secret. In the public demo, no payment is signed; in a build connected to the testnet settlement API, you can sign a testnet payment.',
+            'The settlement API, only if a build is configured with one. The default build is not. When one is configured, a funding request sends the bill id, the amount in minor units, the currency, your wallet\'s public address and a random idempotency key, and later the signed transaction. It never sends your bill file. The request goes to the address that build was configured with.',
           ]}
         />
         <P>

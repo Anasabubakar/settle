@@ -130,7 +130,7 @@ export const FLOW_STEPS: FlowStep[] = [
     title: 'Quote with an unsigned payment',
     status: 'simulated',
     inApp:
-      'The funding sheet shows a testnet preview. It does not request a quote today.',
+      'The public demo build shows a simulated preview and requests no quote. A build configured with a settlement API URL asks the API for a quote and shows the amount, the fixture exchange rate, the network fee and the expiry before you sign.',
     inRepos:
       'settle-api is a separate repository and a testnet reference implementation: it returns an expiring, fee-disclosed quote and an unsigned transaction from fixture providers and fixture rates. It has no authentication, no real provider directory and no real rate source. The app has a client for it that only runs when a settlement API URL is configured at build time.',
   },
@@ -138,14 +138,14 @@ export const FLOW_STEPS: FlowStep[] = [
     title: 'The wallet signs',
     status: 'simulated',
     inApp:
-      'On web, the app can check whether the Freighter browser extension is present. The funding sheet does not ask it to sign anything today. On iOS and Android the wallet is reported as unavailable.',
+      'In the public demo build nothing is signed. In a build configured with a settlement API URL, desktop web asks the Freighter extension to sign the exact transaction the API built, and the app refuses a transaction that differs. On iOS and Android the wallet is reported as unavailable.',
     inRepos:
       'A wallet adapter exists for Freighter on web. It is designed to sign only the exact transaction the settlement API produced. Mobile wallet signing is not built.',
   },
   {
     title: 'The network confirms',
     status: 'simulated',
-    inApp: 'The app does not watch the Stellar network for your payment.',
+    inApp: 'In the public demo build there is no payment to watch. In a configured testnet build the app asks the settlement API to confirm, and shows success only when the API has re-read the transaction from the network and matched it to the quote.',
     inRepos:
       'The settle-api reference re-reads a submitted testnet transaction from the network and compares it to the quote before treating it as confirmed. A production confirmation observer and indexer are not built.',
   },
@@ -153,7 +153,7 @@ export const FLOW_STEPS: FlowStep[] = [
     title: 'A receipt',
     status: 'simulated',
     inApp:
-      'After a preview, the app shows a "payment preview saved" screen. It has no transaction behind it.',
+      'In the public demo build, a preview ends with a "payment preview saved" screen that has no transaction behind it. In a configured testnet build the app shows the receipt id, a Stellar Expert testnet link and the receipt JSON.',
     inRepos:
       'The settle-api reference keeps an append-only, hash-chained receipt ledger on testnet. Provider reconciliation and a production receipt indexer are not built.',
   },
@@ -175,7 +175,7 @@ export type FaqItem = { q: string; a: string };
 export const FAQ: FaqItem[] = [
   {
     q: 'Does Settle move real money?',
-    a: 'No. Settle is a testnet prototype. Funding a bill in the app is a preview: no payment is made, nothing is signed, and no funds move. Stellar mainnet is not enabled.',
+    a: 'No. Settle is a testnet prototype. In the public demo, funding a bill is a preview: no payment is made, nothing is signed, and no funds move. In a build connected to the testnet settlement API, a supporter can sign a real testnet payment, which has no monetary value. Stellar mainnet is not enabled.',
   },
   {
     q: 'Where do my bill files go?',
@@ -195,7 +195,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: 'Do I need a crypto wallet?',
-    a: 'Not to look around. On web, the app can detect the Freighter browser extension and tell you whether it is available, but it does not ask Freighter to sign a payment today. On iOS and Android, wallet signing is not available.',
+    a: 'Not to look around. On desktop web, the app can detect the Freighter browser extension. In the public demo it does not ask Freighter to sign anything; in a build connected to the testnet settlement API it asks Freighter to sign a testnet payment. On iOS and Android, wallet signing is not available.',
   },
   {
     q: 'Are the bills, people and amounts real?',
