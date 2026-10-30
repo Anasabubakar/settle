@@ -1,3 +1,5 @@
+import type { Metadata } from 'expo-router/server';
+import { PAGES } from '@/content/site';
 import { useState } from 'react';
 import {
   Pressable,
@@ -9,6 +11,8 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { SiteFooter } from '@/components/site/site-footer';
+import { MoreLinks } from '@/components/site/more-links';
 import { Fonts, SettleColors } from '@/constants/theme';
 
 const displayFont = Fonts.display ?? Fonts.sans;
@@ -16,6 +20,10 @@ const bodyFont = Fonts.body ?? Fonts.sans;
 const bodyBoldFont = Fonts.bodyBold ?? Fonts.sans;
 
 const preferenceOptions = ['Housing', 'Medical', 'Utilities', 'Education', 'Family care'];
+
+export function generateMetadata(): Metadata {
+  return { title: PAGES.profile.title, description: PAGES.profile.description };
+}
 
 export default function ProfileScreen() {
   const { width } = useWindowDimensions();
@@ -172,8 +180,11 @@ export default function ProfileScreen() {
               </View>
             </View>
 
+            <MoreLinks />
+
             <Text style={styles.footerNote}>Your generosity is yours. Settle never sells personal giving data.</Text>
           </View>
+          <SiteFooter webOnly />
         </ScrollView>
       </SafeAreaView>
     </View>
